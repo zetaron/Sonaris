@@ -1,0 +1,4 @@
+bin/
+build/
+qtcreator-build/
+*.user

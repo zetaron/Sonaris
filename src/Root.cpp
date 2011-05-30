@@ -12,6 +12,11 @@ void Root::Run(sf::VideoMode videoMode, std::string windowTitle) {
     Run(videoMode, windowTitle, sf::Vector2i(800,600));
 }
 
+boost::shared_ptr<sf::RenderWindow> Root::GetRenderWindowPtr() {
+    return mRenderWindow;
+}
+
+
 void Root::Run(sf::VideoMode videoMode, std::string windowTitle, sf::Vector2i windowSize) {
     mRenderWindow = boost::shared_ptr<sf::RenderWindow>(new sf::RenderWindow);
     mRenderWindow->Create(videoMode, windowTitle);
@@ -20,19 +25,24 @@ void Root::Run(sf::VideoMode videoMode, std::string windowTitle, sf::Vector2i wi
     mRenderWindow->SetActive(true);
 
     sf::Clock Clock;
-    while(GetRenderWindowPtr()->IsOpened()) {
+    while(mRenderWindow->IsOpened()) {
         float timeDelta = Clock.GetElapsedTime();
         Clock.Reset();
 
         sf::Event event;
-        while(GetRenderWindowPtr()->GetEvent(event))
+        while(mRenderWindow->PollEvent(event))
             HandleEvent(event, timeDelta);
-        GetRenderWindowPtr()->Display();
+
+        mRenderWindow->Clear();
+
+        // draw
+
+        mRenderWindow->Display();
     }
 }
 
 void Root::SetWindowTitle(std::string windowTitle) {
-    GetRenderWindowPtr()->SetTitle(windowTitle);
+    mRenderWindow->SetTitle(windowTitle);
 }
 
 void Root::HandleEvent(sf::Event event, float timeDelta) {

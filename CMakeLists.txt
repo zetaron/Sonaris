@@ -21,10 +21,11 @@ include_directories(
 	"${CMAKE_SOURCE_DIR}/src/"
     ${Boost_INCLUDE_DIRS}
     ${SFML_INCLUDE_DIRS}
-    )
+    src/
+)
 
 aux_source_directory(src/ sources)
-include_directories(src/)
+
 add_executable(${PROJECT_NAME}
     ${sources}
     )
