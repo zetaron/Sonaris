@@ -1,6 +1,7 @@
+package view;
 import java.awt.*;
 
-class AbsoluteMap extends Canvas {	
+public class AbsoluteMap extends Canvas {	
 	public AbsoluteMap (int x, int y, int grid_size, int grid_sub_lines) {
 		setBounds(x, y, 360, 270);
 		mGridSize = grid_size;
