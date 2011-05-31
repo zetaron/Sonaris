@@ -7,6 +7,8 @@ class Sonaris extends Frame {
         setSize(800,500);
         addWindowListener(new SonarisListener());
         setVisible(true);
+        
+        add(new AbsoluteMap(50, 50, 32, 16));
     }
 
     class SonarisListener extends WindowAdapter {
