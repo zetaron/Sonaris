@@ -51,13 +51,28 @@ public class Map extends Canvas {
 			g.drawLine(i * mGridSize, 0, i * mGridSize, h);
 	}
 	
-	private void vehicle(Graphics g, int x, int y, int rotation) {
+	private void vehicle(Graphics g, int x, int y, float rotation) {
 		g.setColor(Color.RED);
 		
 		//TODO: use rotation
 		
-		g.drawLine(x, y+8, x+3, y);
-		g.drawLine(x+6, y+8, x+3, y);
+		Polygon p = new Polygon();
+		p.addPoint(0, -8);
+		p.addPoint(3, 0);
+		p.addPoint(0, -3);
+		p.addPoint(-3, 0);
+		
+		for(int i = 0; i < p.npoints; ++i) {
+			double xt = (p.xpoints[i] * Math.cos(rotation)) - (p.ypoints[i] * Math.sin(rotation));
+			double yt = (p.ypoints[i] * Math.cos(rotation)) + (p.xpoints[i] * Math.sin(rotation));
+			p.xpoints[i] = (int)Math.round(xt);
+			p.ypoints[i] = (int)Math.round(yt);
+		}
+		
+
+		p.translate(x, y);
+		
+		g.drawPolygon(p);
 	}
 	
 	@Override
@@ -68,7 +83,7 @@ public class Map extends Canvas {
 		
 		if(mGrid)
 			grid(g);
-		vehicle(g, getSize().width/2, getSize().height/2, 0);
+		vehicle(g, getSize().width/2, getSize().height/2, (float)Math.PI / 2);
 
 	}
 	
