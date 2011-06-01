@@ -3,3 +3,5 @@ build/
 qtcreator-build/
 *.user
 dist/
+.project
+.classpath
