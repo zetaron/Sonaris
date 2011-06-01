@@ -5,6 +5,6 @@ bake:
 	nxjc -d build src/*.java	
 
 upload:
-	cd build && sudo nxj -r Sonaris
+	cd build && sudo nxj -u -r Sonaris
 
 go: bake upload

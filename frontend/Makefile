@@ -10,6 +10,6 @@ clean:
 	ant clean
 
 run:
-	cd build && nxjpc Sonaris
+	cd build && sudo nxjpc Sonaris
 
 go: bake run

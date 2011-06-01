@@ -2,6 +2,8 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 
 import lejos.pc.comm.*;
@@ -48,8 +50,16 @@ public class MainWindow extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
     	if(e.getActionCommand() == "scan") {
     		try {
-    			byte[] ar = {1};
-    			mConnection.sendRequest(ar ,1);
+    			OutputStream out = mConnection.getOutputStream();
+    			byte[] scan_cmd = {1,0,0};
+    			out.write(scan_cmd);
+    			
+    			byte[] reply = new byte[3];
+    			InputStream in = mConnection.getInputStream();
+    			in.read(reply);
+    			
+    			
+    			
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}

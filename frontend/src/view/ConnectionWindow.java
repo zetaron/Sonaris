@@ -42,7 +42,7 @@ public class ConnectionWindow extends JFrame implements ActionListener {
 		mListModel.addElement("Searching... this may take a while");
 		
 		try {
-			mInfos = mMainWindow.GetConnection().search("NXT", NXTCommFactory.BLUETOOTH);
+			mInfos = mMainWindow.GetConnection().search(null, NXTCommFactory.BLUETOOTH);
 		} catch (NXTCommException ex) {
 			mListModel.clear();
 			mListModel.addElement("Failed to find NXTs: " + ex.getMessage());
