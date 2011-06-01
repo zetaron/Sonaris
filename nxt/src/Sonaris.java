@@ -1,35 +1,28 @@
 import lejos.nxt.*;
-import lejos.util.Delay;
-import lejos.util.TextMenu;
+import lejos.util.*;
 
 public class Sonaris {
 	public Sonaris() {
-		mPerformer = new Performer();
-		while(true) {
-			Run();
-		}
+		mPerformer = new Performer(this);
+		
+		while(Run());
 	}
 	
 	public void Initialize() {
 		
 	}
 	
-	public void Run() {		
+	public boolean Run() {		
 		int m = ShowMenu();
 		LCD.clear();
 		if(m == 0) {
 			// Run
-			// mPerformer.Scan();
-			System.out.println("Driving to\n  obstacle.");
-			int d = Performer.SONAR_SENSOR.getDistance();
-			Delay.msDelay(20);
-			if(d == 255)
-				System.out.println("Cannot find\n  obstacle.");
-			else
-				mPerformer.Move(d - 10);
+			mPerformer.Scan();
 			
+			Button.waitForPress();
 		} else if(m == 2) {
 			mPerformer.Calibrate();
+			Button.waitForPress();
 		} else if(m == 3) {
 			LCD.clear();
 			System.out.println("     Sonaris    ");
@@ -40,19 +33,27 @@ public class Sonaris {
 			System.out.println("                ");
 			System.out.println("    by opatut   ");
 			System.out.println("   and zetaron  ");
+			Button.waitForPress();
 		} else if(m == 4) {
+			return false;
+		} else if(m == 5) {
 			NXT.shutDown();
+			return false;
 		}
+		return true;
 	}
 	
 	public static void main(String[] args) {
 		new Sonaris();
-		Button.waitForPress();
 	}
 	
 	public int ShowMenu() {
 		TextMenu menu = new TextMenu(MENU, 2, "*-- Sonaris --*");
 		return menu.select(0, 5000);
+	}
+	
+	public Performer GetPerformer() {
+		return mPerformer;
 	}
 	
 	private Performer mPerformer;

@@ -13,7 +13,11 @@
 
     <target name="compile" depends="init"
         description="compile the source " >
-        <javac srcdir="${src}" destdir="${build}"/>
+        <javac srcdir="${src}" destdir="${build}" includeantruntime="false">
+            <classpath>
+                <pathelement path="/usr/share/java/lejos_nxj/"/>
+            </classpath>
+        </javac>
     </target>
 
     <target name="dist" depends="compile"

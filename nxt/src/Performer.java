@@ -1,10 +1,12 @@
+import java.util.Queue;
+
 import lejos.nxt.*;
-import lejos.util.Delay;
+import lejos.util.*;
 
 
-public class Performer {
-	public Performer() {
-		
+public class Performer extends CommandListener {
+	public Performer(Sonaris sonaris) {
+		mSonaris = sonaris;
 	}
 	
 	public void Scan() {		
@@ -60,13 +62,49 @@ public class Performer {
 		if(INVERT_MOTORS) angle *= -1;
 		
 		LEFT_MOTOR.rotate(angle, true);
+		
+		
 		RIGHT_MOTOR.rotate(angle);
+		
+		
 		Delay.msDelay(20); // sleep to ensure both motors are done
 	}
 	
 	public void Rotate(int angle) {
 		
 	}
+	
+	
+	public void QueueCommand(Command cmd) {
+		mCommandQueue.push(cmd);
+	}
+	
+	public void CancelAllTasks() {
+		mCommandQueue.clear();
+		CancelCurrentTask();
+	}
+	
+	public void CancelCurrentTask() {
+		mRunningTask.interrupt();
+	}
+	
+	public boolean RunNextTask() {
+		if(!mCommandQueue.empty()) {
+			Command cmd = (Command)mCommandQueue.pop();
+			cmd.SetListener(this);
+			cmd.start();
+			return true;
+		}
+		return false;
+	}
+	
+	public void TaskFinished(Command cmd) {
+		RunNextTask();		
+	}
+	
+	private Queue mCommandQueue;
+	private Command mRunningTask;
+	private Sonaris mSonaris;
 
 	public static Motor SONAR_MOTOR = Motor.A;
 	public static Motor LEFT_MOTOR = Motor.B;
@@ -79,4 +117,6 @@ public class Performer {
 	public static int SCAN_STEPS = 9;
 	
 	public static float DISTANCE_PER_ROTATION = 8.5F;
+	public static int ANGLE_PER_CHECK = 20;
+
 }
