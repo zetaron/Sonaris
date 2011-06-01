@@ -21,7 +21,12 @@ public class MainWindow extends Frame {
         add(l);
         
         // -- RIGHT MAP (ABSOLUTE)
-        add(new AbsoluteMap(420, 60, 32, 3));
+        Map am = new Map(420, 60, 360, 270);
+        am.SetGrid(32, 3);
+        add(am);
+        
+        Map rm = new Map(20, 60, 360, 270);
+        add(rm);
     }
 
     class SonarisListener extends WindowAdapter {
