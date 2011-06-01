@@ -1,5 +1,8 @@
 package view;
 import java.awt.*;
+import java.util.*;
+
+import model.*;
 
 public class Map extends Canvas {	
 	public Map (int x, int y, int width, int height) {
@@ -8,6 +11,7 @@ public class Map extends Canvas {
 		setBackground (new Color(30, 30, 30));
 		mGridColor = new Color(100, 100, 100);
 		mGridSubColor = new Color(50,50,50);
+		mVehicleRotation = 0;
 	}
 	
 	public void SetBackgroundColor(Color c) {
@@ -51,11 +55,24 @@ public class Map extends Canvas {
 			g.drawLine(i * mGridSize, 0, i * mGridSize, h);
 	}
 	
+	private void sonar(Graphics g) {
+		// TODO sonar drawing
+	}
+	
+	private void points(Graphics g) {
+		// TODO draw points which are *bad*
+		
+		for(ScanDataSet pt : mDataSets) {
+			//pt.GetDistance()/10			
+		}
+	}
+	
 	private void vehicle(Graphics g, int x, int y, float rotation) {
+		
+		rotation = rotation / 180.0f * (float)Math.PI;
+		
 		g.setColor(Color.RED);
-		
-		//TODO: use rotation
-		
+				
 		Polygon p = new Polygon();
 		p.addPoint(0, -8);
 		p.addPoint(3, 0);
@@ -75,20 +92,41 @@ public class Map extends Canvas {
 		g.drawPolygon(p);
 	}
 	
+	public void SetVehicleRotation(int rotation) {
+		mVehicleRotation = rotation;
+	}
+	
+	public void AddPoint(ScanDataSet p) {
+		mDataSets.add(p);
+	}
+	
+	public void SetPoints(java.util.List<ScanDataSet> points) {
+		mDataSets.clear();
+		mDataSets = points;
+	}
+	
+	public void ClearPoints() {
+		mDataSets.clear();
+	}
+	
 	@Override
 	public void paint (Graphics g) {
-		//Graphics2D g2d = (Graphics2D)g;
-		//TODO: vehicle
 		//TODO: bad-entities
 		
-		if(mGrid)
+		if(mGrid) {
 			grid(g);
-		vehicle(g, getSize().width/2, getSize().height/2, (float)Math.PI / 2);
-
+			points(g);
+		} else {
+			points(g);
+			sonar(g);
+		}
+		vehicle(g, getWidth()/2, getHeight()/2, mVehicleRotation);
 	}
 	
 	private static final long serialVersionUID = 4947745901600657577L;
 	private int mGridSize, mGridSubLines;
 	private boolean mGrid;
 	private Color mGridColor, mGridSubColor;
+	private int mVehicleRotation;
+	private java.util.List<ScanDataSet> mDataSets;
 }

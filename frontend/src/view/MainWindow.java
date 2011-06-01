@@ -2,8 +2,7 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-
-
+import java.util.*;
 import lejos.pc.comm.*;
 
 public class MainWindow extends JFrame implements ActionListener {
@@ -36,6 +35,7 @@ public class MainWindow extends JFrame implements ActionListener {
         // -- RIGHT MAP (ABSOLUTE)
         Map am = new Map(420, 60, 360, 270);
         am.SetGrid(32, 3);
+        am.SetVehicleRotation(90);
         getContentPane().add(am, BorderLayout.EAST);
         
         Map rm = new Map(20, 60, 360, 270);
@@ -115,4 +115,6 @@ public class MainWindow extends JFrame implements ActionListener {
 		}
 	}
 	
+	// List Example implement with ArrayList
+    java.util.List<Integer> mPoints=new ArrayList<Integer>();
 }
