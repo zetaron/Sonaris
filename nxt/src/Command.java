@@ -37,7 +37,6 @@ public class Command extends Thread {
 		} else {
 			// send Status:OK
 			mSonaris.GetCommunicator().SendCommand(new Command((byte)4,(byte)5,(byte)0));
-
 			mSonaris.GetPerformer().QueueCommand(this);
 		}
 	}

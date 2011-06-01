@@ -7,6 +7,7 @@ import lejos.util.*;
 public class Performer extends CommandListener {
 	public Performer(Sonaris sonaris) {
 		mSonaris = sonaris;
+		mCommandQueue = new Queue();
 	}
 	
 	public void Scan() {		
@@ -160,6 +161,8 @@ public class Performer extends CommandListener {
 	
 	public void QueueCommand(Command cmd) {
 		mCommandQueue.push(cmd);
+		if(mCommandQueue.size() == 1)
+			RunNextTask();
 	}
 	
 	public void CancelAllTasks() {

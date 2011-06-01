@@ -42,11 +42,15 @@ public class Sonaris {
 			LCD.drawString("Bluetooth...", 2, 6);
 			LCDDrawRect(10, 26, 76, 34);
 			
-			boolean conn = mCommunicator.WaitForConnection(true, timeout * 1000);
+			boolean conn = mCommunicator.WaitForConnection(timeout * 1000);
+			
 			
 			if(conn) {
+				// mCommunicator.setDaemon(true);
 				mCommunicator.start();
+				Sound.twoBeeps();
 			} else {
+				Sound.playNote(Sound.FLUTE, 440, 1000); // 1 sec FLUTE <a>
 				LCD.clear();
 				LCD.drawString("Bluetooth", 3, 4);
 				LCD.drawString("connection", 3, 5);
@@ -55,6 +59,9 @@ public class Sonaris {
 			}
 			
 			Button.waitForPress();
+			
+			if(mCommunicator.isAlive())
+				mCommunicator.interrupt();
 		} else if(m == 1) {
 			mPerformer.Calibrate();
 			Button.waitForPress();

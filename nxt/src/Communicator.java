@@ -1,4 +1,5 @@
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
 import lejos.nxt.LCD;
@@ -12,51 +13,52 @@ public class Communicator extends Thread {
 		mSonaris = sonaris;
 	}
 	
-	public boolean WaitForConnection(boolean bluetooth, int timeout) {
-		if(bluetooth)
-			mConnection = Bluetooth.waitForConnection(timeout, 0);
-		else
-			mConnection = USB.waitForConnection(timeout, 0);
-		
+	public boolean WaitForConnection(int timeout) {
+		mConnection = Bluetooth.waitForConnection(timeout, 0);
 		boolean success = mConnection != null;
 		
 		if(success) {
 			Sound.beepSequenceUp();
-			LCD.clear();
-			LCD.drawString("Connected.", 5, 5);
 		} else {
 			Sound.buzz();
-			LCD.clear();
-			LCD.drawString("Failed.", 5, 5);
-		}
-
-		Delay.msDelay(5000);
-		      		
+		}		      		
 		return success;
 	}
 	
 	public void run() {
-		DataInputStream in = mConnection.openDataInputStream();
-		while(true) {
+		while(! interrupted()) {
 			// receive stuff
 			try {
+				DataInputStream in = mConnection.openDataInputStream();
 				byte cmd = in.readByte();
 				byte data1 = in.readByte();
 				byte data2 = in.readByte();
+				in.close();
+				
 				Command c = new Command(cmd, data1, data2);
 				c.OnReceive(mSonaris);
-				mSonaris.GetPerformer().QueueCommand(c);
-				LCD.clear();
-				System.out.println("Queued CMD " + cmd);
+				
+				System.out.println("Receied CMD: " + cmd);
 			} catch (IOException e) {
 				LCD.clear();
 				System.out.println("Receive exception: " + e.getMessage());
+				Delay.msDelay(100);
 			}
 		}
 	}
 	
 	public void SendCommand(Command command) {
-		
+		try {
+			DataOutputStream out = mConnection.openDataOutputStream();
+			out.writeByte(command.GetID());
+			out.writeByte(command.GetData1());
+			out.writeByte(command.GetData2());
+			out.flush();
+			out.close();
+		} catch (IOException e) {
+			LCD.clear();
+			System.out.println("Send exception: " + e.getMessage());
+		}
 	}
 	
 	private Sonaris mSonaris;
