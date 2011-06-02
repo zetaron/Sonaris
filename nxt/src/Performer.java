@@ -10,38 +10,24 @@ public class Performer extends CommandListener {
 		mCommandQueue = new Queue();
 	}
 	
-	public void Scan() {		
-		// bring in start position (front -> right)
-		SONAR_MOTOR.rotate(-SCAN_ANGLE / 2);
-
-		int[] dist = new int[SCAN_STEPS];
-		
-		for(int i = 0; i < SCAN_STEPS; ++i) {
-			SONAR_MOTOR.rotate(SCAN_ANGLE / SCAN_STEPS);
+	public void Scan() {
+		int steps = SCAN_ANGLE / SCAN_STEP_ANGLE + 1; // 180 / 10 + 1 = 19		
+		for(int step = 0; step < steps; ++step) {
+			Sonaris.DrawProgress("Scanning", step * 100 / steps);			
+			int a = SCAN_STEP_ANGLE * step - SCAN_ANGLE / 2;
+			// System.out.println("Step " + step + " / " + steps + ": " + a);
+			SONAR_MOTOR.rotateTo(a);
 			Delay.msDelay(100);
-			// measure
 			
-			LCD.clear();
-		    LCD.drawString("Scanning...", 0, 0);
-		    int d = SONAR_SENSOR.getDistance();
-		    if(d <= 0 || d == 255) {
-			    LCD.drawString("Invalid value.", 0, 1);
-		    	continue;
-		    }
-		    dist[i] = d;
-		    LCD.drawString(d + " cm", 0, 1);
-		    
-		    
-		    LCD.drawString("Sending data... ", 0, 3);
-		    byte bangle = (byte)((i - SCAN_STEPS/2) * (SCAN_ANGLE/SCAN_STEPS));
-		    byte bdist = (byte)d;
-		    LCD.drawString(bangle + " deg > " + bdist + "cm", 0, 4);
-		    mSonaris.GetCommunicator().SendCommand(new Command((byte)6, bangle, bdist));
-		    LCD.drawString("               ", 0, 3);
+			// measure
+			int d = SONAR_SENSOR.getDistance();
+		    mSonaris.GetCommunicator().SendCommand(new Command(6, a, d));
 		}
 		
 		// bring in initial position (left -> front)
-		SONAR_MOTOR.rotate(-SCAN_ANGLE / 2);
+		SONAR_MOTOR.rotateTo(0);
+		
+		Sonaris.DrawProgress("Scanning", 100);
 	}
 	
 	public void Calibrate() {
@@ -165,8 +151,11 @@ public class Performer extends CommandListener {
 	
 	public void QueueCommand(Command cmd) {
 		mCommandQueue.push(cmd);
-		if(mCommandQueue.size() == 1)
+		if(mRunningTask == null) { 
+			// nothing running, gogogo
+			Sound.beep();
 			RunNextTask();
+		}
 	}
 	
 	public void CancelAllTasks() {
@@ -212,7 +201,7 @@ public class Performer extends CommandListener {
 	public static UltrasonicSensor SONAR_SENSOR = new UltrasonicSensor(SensorPort.S1);
 	
 	public static int SCAN_ANGLE = 180;
-	public static int SCAN_STEPS = 19;
+	public static int SCAN_STEP_ANGLE = 10;
 	
 	public static float DISTANCE_PER_ROTATION = 8.5F;
 	public static float TURNS_PER_ROTATION = 0.1F; 

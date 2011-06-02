@@ -1,11 +1,17 @@
 
 public class Command extends Thread {	
-	public Command(byte id, byte data, byte data2) {
+	public Command(byte id, byte data1, byte data2) {
 		mID = id;
-		mData1 = data;
+		mData1 = data1;
 		mData2 = data2;
 	}
 	
+	public Command(int id, int data1, int data2) {
+		mID = (byte)id;
+		mData1 = (byte)data1;
+		mData2 = (byte)data2;
+	}
+
 	public int GetID() {
 		return mID;
 	}

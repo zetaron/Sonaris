@@ -2,6 +2,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import javax.microedition.lcdui.Graphics;
+
 import lejos.nxt.LCD;
 import lejos.nxt.Sound;
 import lejos.nxt.comm.*;
@@ -14,6 +16,9 @@ public class Communicator extends Thread {
 	}
 	
 	public boolean WaitForConnection(int timeout) {
+		Countdown c = new Countdown(timeout / 1000);
+		c.start();
+		
 		mConnection = Bluetooth.waitForConnection(timeout, 0);
 		boolean success = mConnection != null;
 		
@@ -22,6 +27,8 @@ public class Communicator extends Thread {
 		} else {
 			Sound.buzz();
 		}		      		
+		if(c.isAlive())
+			c.interrupt();
 		return success;
 	}
 	
@@ -67,4 +74,24 @@ public class Communicator extends Thread {
 	
 	private Sonaris mSonaris;
 	private NXTConnection mConnection;
+	
+	public class Countdown extends Thread {
+		Countdown(int secs) {
+			mSecs = secs;
+		}
+		
+		public void run() {
+			for(int i = mSecs; i >= 0 && ! interrupted(); --i) {
+				LCD.clear();
+				LCD.drawString("Waiting " + i, 2, 4);
+				LCD.drawString("seconds for", 2, 5);
+				LCD.drawString("Bluetooth...", 2, 6);
+				Graphics g = new Graphics();
+			    g.drawRect(10, 26, 76, 34);
+				Delay.msDelay(1000);
+			}
+		}
+		
+		private int mSecs;
+	}
 }
