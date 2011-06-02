@@ -8,6 +8,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.*;
 
+import lejos.nxt.remote.NXTProtocol;
 import lejos.pc.comm.*;
 import model.ScanDataSet;
 
@@ -124,7 +125,7 @@ public class MainWindow extends JFrame implements ActionListener {
 		}
 	}
 
-	public void Connect(NXTInfo nxt) {
+	public void Connect(String address) {
 		mConnector = new NXTConnector();
 
 		mConnector.addLogListener(new NXTCommLogListener() {
@@ -136,8 +137,8 @@ public class MainWindow extends JFrame implements ActionListener {
 				throwable.printStackTrace();
 			}
 		});
-
-		mConnector.connectTo(nxt, NXTComm.PACKET);
+		
+		mConnector.connectTo(new NXTInfo(NXTCommFactory.BLUETOOTH, "wall-e", address), NXTComm.PACKET);
 		
 		Receiver r = new Receiver(this);
 		r.setDaemon(true);

@@ -69,8 +69,15 @@ public class Map extends Canvas {
 			int px = (int)Math.round(pos[0] * mZoom) + getWidth() / 2;
 			int py = -(int)Math.round(pos[1] * mZoom) + getHeight() / 2;
 			int r = (int)Math.round(pt.GetObstacleSize() * mZoom / 2);
+			
+			float a = - pt.GetRotation() - pt.GetVehicleRotation();
+			double p1x = px + Math.sin((a - 90) / 180F * Math.PI) * r;
+			double p1y = py + Math.cos((a - 90) / 180F * Math.PI) * r;
+			double p2x = px + Math.sin((a + 90) / 180F * Math.PI) * r;
+			double p2y = py + Math.cos((a + 90) / 180F * Math.PI) * r;
+			
 			g.setColor(new Color(255, 255, 0));
-			g.fillOval(px - r, py - r, 2 * r + 1, 2 * r + 1);
+			g.drawLine((int)p1x, (int)p1y, (int)p2x, (int)p2y);
 		}
 	}
 	

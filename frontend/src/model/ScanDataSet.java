@@ -44,7 +44,8 @@ public class ScanDataSet {
 	}
 	
 	public float GetObstacleSize() {
-		return mDistance/10F;
+		return 10;
+		// return mDistance/10F;
 	}
 	
 	

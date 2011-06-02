@@ -23,13 +23,17 @@ public class Performer extends CommandListener {
 			
 			LCD.clear();
 		    LCD.drawString("Scanning...", 0, 0);
-		    int d = SONAR_SENSOR.getDistance(); 
+		    int d = SONAR_SENSOR.getDistance();
+		    if(d <= 0 || d == 255) {
+			    LCD.drawString("Invalid value.", 0, 1);
+		    	continue;
+		    }
 		    dist[i] = d;
 		    LCD.drawString(d + " cm", 0, 1);
 		    
 		    
 		    LCD.drawString("Sending data... ", 0, 3);
-		    byte bangle = (byte)((i - 0.5) * (SCAN_ANGLE/SCAN_STEPS));
+		    byte bangle = (byte)((i - SCAN_STEPS/2) * (SCAN_ANGLE/SCAN_STEPS));
 		    byte bdist = (byte)d;
 		    LCD.drawString(bangle + " deg > " + bdist + "cm", 0, 4);
 		    mSonaris.GetCommunicator().SendCommand(new Command((byte)6, bangle, bdist));
@@ -208,7 +212,7 @@ public class Performer extends CommandListener {
 	public static UltrasonicSensor SONAR_SENSOR = new UltrasonicSensor(SensorPort.S1);
 	
 	public static int SCAN_ANGLE = 180;
-	public static int SCAN_STEPS = 9;
+	public static int SCAN_STEPS = 19;
 	
 	public static float DISTANCE_PER_ROTATION = 8.5F;
 	public static float TURNS_PER_ROTATION = 0.1F; 
