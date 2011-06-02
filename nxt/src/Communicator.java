@@ -41,8 +41,12 @@ public class Communicator extends Thread {
 				System.out.println("Receied CMD: " + cmd);
 			} catch (IOException e) {
 				LCD.clear();
-				System.out.println("Receive exception: " + e.getMessage());
-				Delay.msDelay(100);
+				System.out.println("Receive"); 
+				System.out.println("exception: ");
+				System.out.println("\n" + e.getMessage());
+				Sound.buzz();
+				Delay.msDelay(5000);
+				System.exit(0);
 			}
 		}
 	}

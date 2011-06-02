@@ -5,10 +5,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.IOException;
+import java.util.*;
 
 import lejos.pc.comm.*;
+import model.ScanDataSet;
 
 public class MainWindow extends JFrame implements ActionListener {
 	public MainWindow() {
@@ -37,9 +38,9 @@ public class MainWindow extends JFrame implements ActionListener {
 		getContentPane().add(b, BorderLayout.SOUTH);
 
 
-		Map m = new Map(20, 60, 360, 270);
-		m.SetGrid(32, 3);
-		getContentPane().add(m, BorderLayout.CENTER);
+		mMap = new Map();
+		mMap.SetGrid(100, 9);
+		getContentPane().add(mMap, BorderLayout.CENTER);
 
 		ConnectionWindow c = new ConnectionWindow(this);
 		c.setVisible(true);
@@ -47,6 +48,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand() == "scan") {
+			++mLastScanID;
 			SendCommand(1, 0, 0);
 		}
 	}
@@ -136,6 +138,58 @@ public class MainWindow extends JFrame implements ActionListener {
 		});
 
 		mConnector.connectTo(nxt, NXTComm.PACKET);
+		
+		Receiver r = new Receiver(this);
+		r.setDaemon(true);
+		r.start();
 	}
 
+	
+	// List Example implement with ArrayList
+    java.util.List<Integer> mPoints=new ArrayList<Integer>();
+    
+    public class Receiver extends Thread {
+    	public Receiver(MainWindow main) {
+    		mMain = main;
+    	}
+    	
+    	public void run() {
+			DataInputStream in = mConnector.getDataIn();
+    		while(! interrupted()) {
+    			try {
+    				byte id = in.readByte();
+    				byte d1 = in.readByte(); 
+    				byte d2 = in.readByte();
+    				mMain.Reveiced(id, d1, d2);
+    			} catch (IOException e) {
+    				System.err.println("NOOO: " + e.getMessage());
+					e.printStackTrace();
+				}
+    		}
+    		try {
+    			in.close();
+    		} catch(IOException e) {
+    			System.err.println("Failed to close stream: " + e.getMessage());
+				e.printStackTrace();
+    		}
+    	}
+    	
+    	private MainWindow mMain;
+    }
+
+	public void Reveiced(int id, int d1, int d2) {
+		if(id == 4) {
+			String[] statii = {"IDLE","SCANNING", "MOVING","ROTATING","ERROR:OBSTACLE", "OK", "TRANSMISSION ERROR"};
+			if(d1 <= statii.length && d1 >= 0) {
+				System.out.println("Received: STATUS - " + statii[d1]);
+			}
+		} else if(id == 6) {
+			mMap.AddPoint(new ScanDataSet(mLastScanID, d2, d1, 0, 0, 0));
+			System.out.println("Received: SCANDATASET - d = " + d2 + "cm  - a = " + d1 + "°");
+			mMap.repaint();
+		}
+	}
+	
+	private int mLastScanID = 0;
+	private Map mMap;
 }
